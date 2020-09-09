@@ -126,7 +126,7 @@ public class RecursiveMetadataAndContentApiServiceImpl implements RecursiveMetad
     ) throws Exception {
         Metadata metadata = new Metadata();
         return Response.ok(
-                parseMetadata(TikaResource.getInputStream(is, metadata, httpHeaders),
+                parseMetadata(TikaResourceApiServiceImpl.getInputStream(is, metadata, httpHeaders),
                         metadata,
                         httpHeaders.getRequestHeaders(), info, handlerTypeName)).build();
     }
@@ -135,15 +135,15 @@ public class RecursiveMetadataAndContentApiServiceImpl implements RecursiveMetad
                                        MultivaluedMap<String, String> httpHeaders, UriInfo info, String handlerTypeName)
             throws Exception {
         final ParseContext context = new ParseContext();
-        Parser parser = TikaResource.createParser();
+        Parser parser = TikaResourceApiServiceImpl.createParser();
         // TODO: parameterize choice of max chars/max embedded attachments
         RecursiveParserWrapper wrapper = new RecursiveParserWrapper(parser);
 
 
-        TikaResource.fillMetadata(parser, metadata, context, httpHeaders);
+        TikaResourceApiServiceImpl.fillMetadata(parser, metadata, context, httpHeaders);
         // no need to add parser to parse recursively
-        TikaResource.fillParseContext(context, httpHeaders, null);
-        TikaResource.logRequest(LOG, info, metadata);
+        TikaResourceApiServiceImpl.fillParseContext(context, httpHeaders, null);
+        TikaResourceApiServiceImpl.logRequest(LOG, info, metadata);
 
         int writeLimit = -1;
         if (httpHeaders.containsKey("writeLimit")) {
@@ -159,9 +159,9 @@ public class RecursiveMetadataAndContentApiServiceImpl implements RecursiveMetad
                 BasicContentHandlerFactory.parseHandlerType(handlerTypeName, DEFAULT_HANDLER_TYPE);
         RecursiveParserWrapperHandler handler = new RecursiveParserWrapperHandler(
                 new BasicContentHandlerFactory(type, writeLimit), maxEmbeddedResources,
-                TikaResource.getConfig().getMetadataFilter());
+                TikaResourceApiServiceImpl.getConfig().getMetadataFilter());
         try {
-            TikaResource.parse(wrapper, LOG, info.getPath(), is, handler, metadata, context);
+            TikaResourceApiServiceImpl.parse(wrapper, LOG, info.getPath(), is, handler, metadata, context);
         } catch (SecurityException e) {
             throw e;
         } catch (Exception e) {

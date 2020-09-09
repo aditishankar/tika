@@ -84,7 +84,7 @@ public class UnpackResourceApiServiceImpl implements UnpackResourceApi {
     public static final String TEXT_FILENAME = "__TEXT__";
     private static final String META_FILENAME = "__METADATA__";
 
-    private static final Logger LOG = LoggerFactory.getLogger(UnpackerResourceApi.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UnpackResourceApi.class);
 
     public static void metadataToCsv(Metadata metadata, OutputStream outputStream) throws IOException {
         CSVWriter writer = new CSVWriter(new OutputStreamWriter(outputStream, UTF_8));
@@ -108,7 +108,7 @@ public class UnpackResourceApiServiceImpl implements UnpackResourceApi {
             @Context HttpHeaders httpHeaders,
             @Context UriInfo info
     ) throws Exception {
-        return process(TikaResource.getInputStream(is, new Metadata(), httpHeaders), httpHeaders, info, false);
+        return process(TikaResourceApiServiceImpl.getInputStream(is, new Metadata(), httpHeaders), httpHeaders, info, false);
     }
 
     @Path("/all{id:(/.*)?}")
@@ -119,7 +119,7 @@ public class UnpackResourceApiServiceImpl implements UnpackResourceApi {
             @Context HttpHeaders httpHeaders,
             @Context UriInfo info
     ) throws Exception {
-        return process(TikaResource.getInputStream(is, new Metadata(), httpHeaders), httpHeaders, info, true);
+        return process(TikaResourceApiServiceImpl.getInputStream(is, new Metadata(), httpHeaders), httpHeaders, info, true);
     }
 
     private Map<String, byte[]> process(
@@ -131,14 +131,14 @@ public class UnpackResourceApiServiceImpl implements UnpackResourceApi {
         Metadata metadata = new Metadata();
         ParseContext pc = new ParseContext();
 
-        Parser parser = TikaResource.createParser();
+        Parser parser = TikaResourceApiServiceImpl.createParser();
         if (parser instanceof DigestingParser) {
             //no need to digest for unwrapping
             parser = ((DigestingParser)parser).getWrappedParser();
         }
-        TikaResource.fillParseContext(pc, httpHeaders.getRequestHeaders(), null);
-        TikaResource.fillMetadata(parser, metadata, pc, httpHeaders.getRequestHeaders());
-        TikaResource.logRequest(LOG, info, metadata);
+        TikaResourceApiServiceImpl.fillParseContext(pc, httpHeaders.getRequestHeaders(), null);
+        TikaResourceApiServiceImpl.fillMetadata(parser, metadata, pc, httpHeaders.getRequestHeaders());
+        TikaResourceApiServiceImpl.logRequest(LOG, info, metadata);
         //even though we aren't currently parsing embedded documents,
         //we need to add this to allow for "inline" use of other parsers.
         pc.set(Parser.class, parser);
@@ -155,7 +155,7 @@ public class UnpackResourceApiServiceImpl implements UnpackResourceApi {
         MutableInt count = new MutableInt();
 
         pc.set(EmbeddedDocumentExtractor.class, new MyEmbeddedDocumentExtractor(count, files));
-        TikaResource.parse(parser, LOG, info.getPath(), is, ch, metadata, pc);
+        TikaResourceApiServiceImpl.parse(parser, LOG, info.getPath(), is, ch, metadata, pc);
 
         if (count.intValue() == 0 && !saveAll) {
             throw new WebApplicationException(Response.Status.NO_CONTENT);
@@ -206,7 +206,7 @@ public class UnpackResourceApiServiceImpl implements UnpackResourceApi {
 
             if (!name.contains(".") && contentType != null) {
                 try {
-                    String ext = TikaResource.getConfig().getMimeRepository().forName(contentType).getExtension();
+                    String ext = TikaResourceApiServiceImpl.getConfig().getMimeRepository().forName(contentType).getExtension();
 
                     if (ext != null) {
                         name += ext;

@@ -66,7 +66,7 @@ public class MetadataResourceApiServiceImpl implements MetadataResourceApi {
     public Response getMetadata(InputStream is, @Context HttpHeaders httpHeaders, @Context UriInfo info) throws Exception {
         Metadata metadata = new Metadata();
         return Response.ok(
-                parseMetadata(TikaResource.getInputStream(is, metadata, httpHeaders), metadata, httpHeaders.getRequestHeaders(), info)).build();
+                parseMetadata(TikaResourceApiServiceImpl.getInputStream(is, metadata, httpHeaders), metadata, httpHeaders.getRequestHeaders(), info)).build();
     }
 
     /**
@@ -103,7 +103,7 @@ public class MetadataResourceApiServiceImpl implements MetadataResourceApi {
         Metadata metadata = new Metadata();
         boolean success = false;
         try {
-            parseMetadata(TikaResource.getInputStream(is, metadata, httpHeaders),
+            parseMetadata(TikaResourceApiServiceImpl.getInputStream(is, metadata, httpHeaders),
                     metadata, httpHeaders.getRequestHeaders(), info);
             // once we've parsed the document successfully, we should use NOT_FOUND
             // if we did not see the field
@@ -129,12 +129,12 @@ public class MetadataResourceApiServiceImpl implements MetadataResourceApi {
     private Metadata parseMetadata(InputStream is, Metadata metadata,
                                    MultivaluedMap<String, String> httpHeaders, UriInfo info) throws IOException {
         final ParseContext context = new ParseContext();
-        Parser parser = TikaResource.createParser();
-        TikaResource.fillMetadata(parser, metadata, context, httpHeaders);
+        Parser parser = TikaResourceApiServiceImpl.createParser();
+        TikaResourceApiServiceImpl.fillMetadata(parser, metadata, context, httpHeaders);
         //no need to pass parser for embedded document parsing
-        TikaResource.fillParseContext(context, httpHeaders, null);
-        TikaResource.logRequest(LOG, info, metadata);
-        TikaResource.parse(parser, LOG, info.getPath(), is,
+        TikaResourceApiServiceImpl.fillParseContext(context, httpHeaders, null);
+        TikaResourceApiServiceImpl.logRequest(LOG, info, metadata);
+        TikaResourceApiServiceImpl.parse(parser, LOG, info.getPath(), is,
                 new LanguageHandler() {
                     public void endDocument() {
                         metadata.set("language", getLanguage().getLanguage());

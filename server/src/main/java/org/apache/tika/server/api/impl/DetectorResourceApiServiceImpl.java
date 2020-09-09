@@ -47,7 +47,7 @@ public class DetectorResourceApiServiceImpl implements DetectorResourceApi {
     private static final Logger LOG = LoggerFactory.getLogger(DetectorResourceApi.class);
     private final ServerStatus serverStatus;
 
-    public DetectorResource(ServerStatus serverStatus) {
+    public DetectorResourceApiServiceImpl(ServerStatus serverStatus) {
         this.serverStatus = serverStatus;
     }
     @PUT
@@ -57,14 +57,14 @@ public class DetectorResourceApiServiceImpl implements DetectorResourceApi {
     public String detect(final InputStream is,
                          @Context HttpHeaders httpHeaders, @Context final UriInfo info) {
         Metadata met = new Metadata();
-        TikaInputStream tis = TikaInputStream.get(TikaResource.getInputStream(is, met, httpHeaders));
-        String filename = TikaResource.detectFilename(httpHeaders
+        TikaInputStream tis = TikaInputStream.get(TikaResourceApiServiceImpl.getInputStream(is, met, httpHeaders));
+        String filename = TikaResourceApiServiceImpl.detectFilename(httpHeaders
                 .getRequestHeaders());
         LOG.info("Detecting media type for Filename: {}", filename);
         met.add(TikaCoreProperties.RESOURCE_NAME_KEY, filename);
         long taskId = serverStatus.start(ServerStatus.TASK.DETECT, filename);
         try {
-            return TikaResource.getConfig().getDetector().detect(tis, met).toString();
+            return TikaResourceApiServiceImpl.getConfig().getDetector().detect(tis, met).toString();
         } catch (IOException e) {
             LOG.warn("Unable to detect MIME type for file. Reason: {} ({})",
                     e.getMessage(), filename, e);

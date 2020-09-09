@@ -59,10 +59,10 @@ public class TranslateResourceApiServiceImpl implements TranslateResourceApi {
     private static final Logger LOG = LoggerFactory.getLogger(TranslateResourceApi.class);
 
     private final ServerStatus serverStatus;
-    public TranslateResource(ServerStatus serverStatus) {
+    public TranslateResourceApiServiceImpl(ServerStatus serverStatus) {
         this.loader = new ServiceLoader(ServiceLoader.class.getClassLoader(),
                 LoadErrorHandler.WARN);
-        this.defaultTranslator = TikaResource.getConfig().getTranslator();
+        this.defaultTranslator = TikaResourceApiServiceImpl.getConfig().getTranslator();
         this.serverStatus = serverStatus;
     }
 
@@ -106,7 +106,7 @@ public class TranslateResourceApiServiceImpl implements TranslateResourceApi {
             translate = this.defaultTranslator;
             LOG.info("Using default translator");
         }
-        TikaResource.checkIsOperating();
+        TikaResourceApiServiceImpl.checkIsOperating();
         long taskId = serverStatus.start(ServerStatus.TASK.TRANSLATE, null);
         try {
             return translate.translate(content, sLang, dLang);

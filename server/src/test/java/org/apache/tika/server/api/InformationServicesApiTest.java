@@ -25,27 +25,15 @@
 
 package org.apache.tika.server.api;
 
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.Before;
-import static org.junit.Assert.*;
-
-import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.tika.server.api.InformationServicesApi;
-import org.apache.tika.server.model.DefaultDetector;
-import org.apache.tika.server.model.DetailedParsers;
-import org.apache.tika.server.model.Parsers;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -65,7 +53,7 @@ public class InformationServicesApiTest {
     @Before
     public void setup() {
         JacksonJsonProvider provider = new JacksonJsonProvider();
-        List providers = new ArrayList();
+        List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
         providers.add(provider);
         
         api = JAXRSClientFactory.create("https://localhost:9998", InformationServicesApi.class, providers);

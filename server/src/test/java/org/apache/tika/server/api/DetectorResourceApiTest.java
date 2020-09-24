@@ -27,20 +27,13 @@ package org.apache.tika.server.api;
 
 import org.junit.Test;
 import org.junit.Before;
-import static org.junit.Assert.*;
-
-import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.tika.server.api.DetectorResourceApi;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -60,7 +53,7 @@ public class DetectorResourceApiTest {
     @Before
     public void setup() {
         JacksonJsonProvider provider = new JacksonJsonProvider();
-        List providers = new ArrayList();
+        List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
         providers.add(provider);
         
         api = JAXRSClientFactory.create("https://localhost:9998", DetectorResourceApi.class, providers);

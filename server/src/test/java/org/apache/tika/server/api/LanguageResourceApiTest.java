@@ -26,6 +26,7 @@ package org.apache.tika.server.api;
 
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.Ignore;
 
 import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;

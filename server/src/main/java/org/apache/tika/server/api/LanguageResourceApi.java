@@ -1,6 +1,7 @@
 package org.apache.tika.server.api;
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -32,7 +33,9 @@ public interface LanguageResourceApi  {
      * POST a UTF-8 text file to the LanguageIdentifier to identify its language.
      *
      * POST a UTF-8 text file to the LanguageIdentifier to identify its language. &lt;b&gt;NOTE&lt;/b&gt;: This endpoint does not parse files.  It runs detection on a UTF-8 string.
-     *
+     * 
+     * @param an {@link InputStream} for which we wish to identify its language
+     *  
      */
     @POST
     @Path("/language/stream")
@@ -41,13 +44,14 @@ public interface LanguageResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the body being a string of the 2 character identified language.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String postLanguageStream();
+    public String postLanguageStream(final InputStream is);
 
     /**
      * POST a text string to the LanguageIdentifier to identify its language.
      *
      * POST a text string to the LanguageIdentifier to identify its language.
      *
+     * @param a {@link java.lang.String} for which we wish to identify its language
      */
     @POST
     @Path("/language/string")
@@ -56,13 +60,14 @@ public interface LanguageResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the body being a string of the 2 character identified language.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String postLanguageString();
+    public String postLanguageString(final String string);
 
     /**
      * PUT a UTF-8 text file to the LanguageIdentifier to identify its language.
      *
      * POST a UTF-8 text file to the LanguageIdentifier to identify its language. &lt;b&gt;NOTE&lt;/b&gt;: This endpoint does not parse files.  It runs detection on a UTF-8 string.
      *
+     * @param an {@link InputStream} for which we wish to identify its language
      */
     @PUT
     @Path("/language/stream")
@@ -71,13 +76,14 @@ public interface LanguageResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the body being a string of the 2 character identified language.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String putLanguageStream();
+    public String putLanguageStream(final InputStream is);
 
     /**
      * PUT a text string to the LanguageIdentifier to identify its language.
      *
      * PUT a text string to the LanguageIdentifier to identify its language.
      *
+     * @param a {@link java.lang.String} for which we wish to identify its language
      */
     @PUT
     @Path("/language/string")
@@ -86,6 +92,6 @@ public interface LanguageResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the body being a string of the 2 character identified language.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String putLanguageString();
+    public String putLanguageString(final String string);
 }
 

@@ -20,7 +20,6 @@ package org.apache.tika.server.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
@@ -43,7 +42,6 @@ import org.apache.tika.server.writer.JSONMessageBodyWriter;
 import org.apache.tika.server.writer.MetadataListMessageBodyWriter;
 import org.apache.tika.server.writer.TextMessageBodyWriter;
 import org.apache.tika.server.writer.XMPMessageBodyWriter;
-import org.junit.Assert;
 import org.junit.Test;
 
 

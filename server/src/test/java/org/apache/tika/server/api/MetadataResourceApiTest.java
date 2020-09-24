@@ -30,18 +30,13 @@ import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
 
-import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.tika.server.api.MetadataResourceApi;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -61,7 +56,7 @@ public class MetadataResourceApiTest {
     @Before
     public void setup() {
         JacksonJsonProvider provider = new JacksonJsonProvider();
-        List providers = new ArrayList();
+        List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
         providers.add(provider);
         
         api = JAXRSClientFactory.create("http://localhost:9998", MetadataResourceApi.class, providers);

@@ -69,7 +69,6 @@ public class TranslateResource {
 			@PathParam("src") String sLang, @PathParam("dest") String dLang)
 			throws TikaException, IOException {
 		return doTranslate(IOUtils.toString(is, UTF_8), translator, sLang, dLang);
-
 	}
 
 	@PUT

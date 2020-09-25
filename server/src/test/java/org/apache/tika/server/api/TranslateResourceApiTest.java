@@ -33,16 +33,22 @@ import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.tika.server.api.TranslateResourceApi;
+import org.apache.tika.server.ServerStatus;
+import org.apache.tika.server.TikaServerParseExceptionMapper;
+import org.apache.tika.server.api.impl.TranslateResourceApiServiceImpl;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-
+import java.io.InputStream;
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
+import org.apache.tika.server.writer.TarWriter;
+import org.apache.tika.server.writer.ZipWriter;
 
 
 /**
@@ -52,22 +58,68 @@ import java.util.Map;
  *
  * API tests for TranslateResourceApi 
  */
-public class TranslateResourceApiTest {
+public class TranslateResourceApiTest extends CXFTestBase{
 
 
     private TranslateResourceApi api;
+	private static final String TRANSLATE_PATH = "/translate";
+	private static final String TRANSLATE_ALL_PATH = TRANSLATE_PATH + "/all";
+	private static final String TRANSLATE_TXT = "This won't translate";
+	private static final String LINGO_PATH = "/org.apache.tika.language.translate.Lingo24Translator";
+	private static final String SRCDEST = "/es/en";
+	private static final String DEST = "/en";
     
     @Before
     public void setup() {
         JacksonJsonProvider provider = new JacksonJsonProvider();
-        List providers = new ArrayList();
+        ArrayList<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
         providers.add(provider);
         
-        api = JAXRSClientFactory.create("https://localhost:9998", TranslateResourceApi.class, providers);
+        api = JAXRSClientFactory.create("http://localhost:9998", TranslateResourceApi.class, providers);
         org.apache.cxf.jaxrs.client.Client client = WebClient.client(api);
         
         ClientConfiguration config = WebClient.getConfig(client); 
     }
+    
+	@Override
+	protected void setUpResources(JAXRSServerFactoryBean sf) {
+		sf.setResourceClasses(TranslateResourceApiServiceImpl.class);
+		sf.setResourceProvider(TranslateResourceApiServiceImpl.class,
+				new SingletonResourceProvider(new TranslateResourceApiServiceImpl(new ServerStatus())));
+
+	}
+
+	@Override
+	protected void setUpProviders(JAXRSServerFactoryBean sf) {
+		List<Object> providers = new ArrayList<Object>();
+		providers.add(new TarWriter());
+		providers.add(new ZipWriter());
+		providers.add(new TikaServerParseExceptionMapper(false));
+		sf.setProviders(providers);
+
+	}
+
+	@Test
+	public void testTranslateFull() throws Exception {
+		String url = endPoint + TRANSLATE_ALL_PATH + LINGO_PATH + SRCDEST;
+		Response response = WebClient.create(url).type("text/plain")
+				.accept("*/*").put(TRANSLATE_TXT);
+		assertNotNull(response);
+		String translated = getStringFromInputStream((InputStream) response
+				.getEntity());
+		assertEquals(TRANSLATE_TXT, translated);
+	}
+	
+	@Test
+	public void testTranslateAutoLang() throws Exception{
+		String url = endPoint + TRANSLATE_ALL_PATH + LINGO_PATH + DEST;
+		Response response = WebClient.create(url).type("text/plain")
+				.accept("*/*").put(TRANSLATE_TXT);
+		assertNotNull(response);
+		String translated = getStringFromInputStream((InputStream) response
+				.getEntity());
+		assertEquals(TRANSLATE_TXT, translated);		
+	}
 
     
     /**

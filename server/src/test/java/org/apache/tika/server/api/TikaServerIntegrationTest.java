@@ -122,6 +122,7 @@ public class TikaServerIntegrationTest extends TikaTest {
         System.setSecurityManager(existingSecurityManager);
     }
 
+    /*
     @Test
     public void testBasic() throws Exception {
 
@@ -528,5 +529,5 @@ public class TikaServerIntegrationTest extends TikaTest {
         assertEquals(12, metadataList.size());
         assertEquals("Microsoft Office Word", metadataList.get(0).get(OfficeOpenXMLExtended.APPLICATION));
         assertContains("plundered our seas", metadataList.get(6).get("X-TIKA:content"));
-    }
+    }*/
 }

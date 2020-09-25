@@ -35,7 +35,19 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import javax.ws.rs.core.Response;
+
+import java.io.InputStream;
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
+import org.apache.tika.server.ServerStatus;
+import org.apache.tika.server.TikaServerParseExceptionMapper;
+import org.apache.tika.server.api.impl.DetectorResourceApiServiceImpl;
+import org.apache.tika.server.writer.TarWriter;
+import org.apache.tika.server.writer.ZipWriter;
 
 
 /**
@@ -45,10 +57,14 @@ import java.util.List;
  *
  * API tests for DetectorResourceApi 
  */
-public class DetectorResourceApiTest {
+public class DetectorResourceApiTest extends CXFTestBase {
 
 
     private DetectorResourceApi api;
+    private static final String DETECT_PATH = "/detect";
+    private static final String DETECT_STREAM_PATH = DETECT_PATH + "/stream";
+    private static final String FOO_CSV = "foo.csv";
+    private static final String CDEC_CSV_NO_EXT = "CDEC_WEATHER_2010_03_02";
     
     @Before
     public void setup() {
@@ -60,6 +76,70 @@ public class DetectorResourceApiTest {
         org.apache.cxf.jaxrs.client.Client client = WebClient.client(api);
         
         ClientConfiguration config = WebClient.getConfig(client); 
+    }
+    
+    @Override
+    protected void setUpResources(JAXRSServerFactoryBean sf) {
+        sf.setResourceClasses(DetectorResourceApiServiceImpl.class);
+        sf.setResourceProvider(DetectorResourceApiServiceImpl.class,
+                new SingletonResourceProvider(new DetectorResourceApiServiceImpl(new ServerStatus())));
+
+    }
+
+    @Override
+    protected void setUpProviders(JAXRSServerFactoryBean sf) {
+        List<Object> providers = new ArrayList<Object>();
+        providers.add(new TarWriter());
+        providers.add(new ZipWriter());
+        providers.add(new TikaServerParseExceptionMapper(false));
+        sf.setProviders(providers);
+
+    }
+
+    @Test
+    public void testDetectCsvWithExt() throws Exception {
+        String url = endPoint + DETECT_STREAM_PATH;
+        Response response = WebClient
+                .create(url)
+                .type("text/csv")
+                .accept("*/*")
+                .header("Content-Disposition",
+                        "attachment; filename=" + FOO_CSV)
+                .put(ClassLoader.getSystemResourceAsStream(FOO_CSV));
+        assertNotNull(response);
+        String readMime = getStringFromInputStream((InputStream) response
+                .getEntity());
+        assertEquals("text/csv", readMime);
+
+    }
+
+    @Test
+    public void testDetectCsvNoExt() throws Exception {
+        String url = endPoint + DETECT_STREAM_PATH;
+        Response response = WebClient
+                .create(url)
+                .type("text/csv")
+                .accept("*/*")
+                .header("Content-Disposition",
+                        "attachment; filename=" + CDEC_CSV_NO_EXT)
+                .put(ClassLoader.getSystemResourceAsStream(CDEC_CSV_NO_EXT));
+        assertNotNull(response);
+        String readMime = getStringFromInputStream((InputStream) response
+                .getEntity());
+        assertEquals("text/plain", readMime);
+
+        // now trick it by adding .csv to the end
+        response = WebClient
+                .create(url)
+                .type("text/csv")
+                .accept("*/*")
+                .header("Content-Disposition",
+                        "attachment; filename=" + CDEC_CSV_NO_EXT + ".csv")
+                .put(ClassLoader.getSystemResourceAsStream(CDEC_CSV_NO_EXT));
+        assertNotNull(response);
+        readMime = getStringFromInputStream((InputStream) response.getEntity());
+        assertEquals("text/csv", readMime);
+
     }
 
     

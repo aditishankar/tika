@@ -1,22 +1,15 @@
 package org.apache.tika.server.api;
 
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
-import org.apache.cxf.jaxrs.ext.multipart.*;
+import org.apache.tika.exception.TikaException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
-import io.swagger.jaxrs.PATCH;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
 
 /**
  * Tika JAX-RS Server
@@ -41,7 +34,9 @@ public interface TranslateResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the translated string, else it will return the original string back.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String postTranslateAllSrcDest();
+    public String postTranslateAllSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("dest") String dLang) throws TikaException, IOException; 
 
     /**
      * POST a document and translates from the *src* language to the *dest*
@@ -56,7 +51,10 @@ public interface TranslateResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the translated string, else it will return the original string back.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String postTranslateAllTranslatorSrcDest();
+    public String postTranslateAllTranslatorSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("src") String sLang, @PathParam("dest") String dLang)
+            throws TikaException, IOException; 
 
     /**
      * PUT a document and auto-detects the *src* language and translates to *dest*
@@ -71,7 +69,9 @@ public interface TranslateResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the translated string, else it will return the original string back.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String putTranslateAllSrcDest();
+    public String putTranslateAllSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("dest") String dLang) throws TikaException, IOException;
 
     /**
      * PUT a document and translates from the *src* language to the *dest*
@@ -86,6 +86,9 @@ public interface TranslateResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the translated string, else it will return the original string back.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String putTranslateAllTranslatorSrcDest();
+    public String putTranslateAllTranslatorSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("src") String sLang, @PathParam("dest") String dLang)
+            throws TikaException, IOException; 
 }
 

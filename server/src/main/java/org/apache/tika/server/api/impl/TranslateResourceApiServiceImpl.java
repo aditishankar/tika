@@ -66,38 +66,6 @@ public class TranslateResourceApiServiceImpl implements TranslateResourceApi {
         this.serverStatus = serverStatus;
     }
 
-    @PUT
-    @POST
-    @Path("/all/{translator}/{src}/{dest}")
-    @Consumes("*/*")
-    @Produces("text/plain")
-    public String translate(final InputStream is,
-                            @PathParam("translator") String translator,
-                            @PathParam("src") String sLang, @PathParam("dest") String dLang)
-            throws TikaException, IOException {
-        return doTranslate(IOUtils.toString(is, UTF_8), translator, sLang, dLang);
-
-    }
-
-    @PUT
-    @POST
-    @Path("/all/{translator}/{dest}")
-    @Consumes("*/*")
-    @Produces("text/plain")
-    public String autoTranslate(final InputStream is,
-                                @PathParam("translator") String translator,
-                                @PathParam("dest") String dLang) throws TikaException, IOException {
-        final String content = IOUtils.toString(is, UTF_8);
-        LanguageResult language = new OptimaizeLangDetector().loadModels().detect(content);
-        if (language.isUnknown()) {
-            throw new TikaException("Unable to detect language to use for translation of text");
-        }
-
-        String sLang = language.getLanguage();
-        LOG.info("LanguageIdentifier: detected source lang: [{}]", sLang);
-        return doTranslate(content, translator, sLang, dLang);
-    }
-
     private String doTranslate(String content, String translator, String sLang,
                                String dLang) throws TikaException, IOException {
         LOG.info("Using translator: [{}]: src: [{}]: dest: [{}]", translator, sLang, dLang);
@@ -135,10 +103,19 @@ public class TranslateResourceApiServiceImpl implements TranslateResourceApi {
      * POST a document and translates from the *src* language to the *dest*. &lt;b&gt;NOTE&lt;/b&gt;:  *translator* should be a fully qualified Tika class name (with package) and *dest* should be the 2 character short code for the source language.
      *
      */
-    public String postTranslateAllSrcDest() {
-        // TODO: Implement...
-        
-        return null;
+    @POST 
+    public String postTranslateAllSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("dest") String dLang) throws TikaException, IOException {
+        final String content = IOUtils.toString(is, UTF_8);
+        LanguageResult language = new OptimaizeLangDetector().loadModels().detect(content);
+        if (language.isUnknown()) {
+            throw new TikaException("Unable to detect language to use for translation of text");
+        }
+
+        String sLang = language.getLanguage();
+        LOG.info("LanguageIdentifier: detected source lang: [{}]", sLang);
+        return doTranslate(content, translator, sLang, dLang);
     }
     
     /**
@@ -147,10 +124,12 @@ public class TranslateResourceApiServiceImpl implements TranslateResourceApi {
      * POST a document and translates from the *src* language to the *dest*. &lt;b&gt;NOTE&lt;/b&gt;:  *translator* should be a fully qualified Tika class name (with package), *src* and *dest* should be the 2 character short code for the source language and dest language respectively.
      *
      */
-    public String postTranslateAllTranslatorSrcDest() {
-        // TODO: Implement...
-        
-        return null;
+    @POST
+    public String postTranslateAllTranslatorSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("src") String sLang, @PathParam("dest") String dLang)
+            throws TikaException, IOException {
+        return doTranslate(IOUtils.toString(is, UTF_8), translator, sLang, dLang);
     }
     
     /**
@@ -159,10 +138,19 @@ public class TranslateResourceApiServiceImpl implements TranslateResourceApi {
      * PUT a document and translates from the *src* language to the *dest*. &lt;b&gt;NOTE&lt;/b&gt;:  *translator* should be a fully qualified Tika class name (with package) and *dest* should be the 2 character short code for the source language.
      *
      */
-    public String putTranslateAllSrcDest() {
-        // TODO: Implement...
-        
-        return null;
+    @PUT
+    public String putTranslateAllSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("dest") String dLang) throws TikaException, IOException {
+        final String content = IOUtils.toString(is, UTF_8);
+        LanguageResult language = new OptimaizeLangDetector().loadModels().detect(content);
+        if (language.isUnknown()) {
+            throw new TikaException("Unable to detect language to use for translation of text");
+        }
+
+        String sLang = language.getLanguage();
+        LOG.info("LanguageIdentifier: detected source lang: [{}]", sLang);
+        return doTranslate(content, translator, sLang, dLang);
     }
     
     /**
@@ -171,10 +159,12 @@ public class TranslateResourceApiServiceImpl implements TranslateResourceApi {
      * PUT a document and translates from the *src* language to the *dest*. &lt;b&gt;NOTE&lt;/b&gt;:  *translator* should be a fully qualified Tika class name (with package), *src* and *dest* should be the 2 character short code for the source language and dest language respectively.
      *
      */
-    public String putTranslateAllTranslatorSrcDest() {
-        // TODO: Implement...
-        
-        return null;
+    @PUT
+    public String putTranslateAllTranslatorSrcDest(final InputStream is,
+            @PathParam("translator") String translator,
+            @PathParam("src") String sLang, @PathParam("dest") String dLang)
+            throws TikaException, IOException {
+        return doTranslate(IOUtils.toString(is, UTF_8), translator, sLang, dLang);
     }
     
 }

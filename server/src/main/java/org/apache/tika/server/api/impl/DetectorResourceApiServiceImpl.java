@@ -84,10 +84,32 @@ public class DetectorResourceApiServiceImpl implements DetectorResourceApi {
      * PUT a document and use the default detector to identify the MIME/media type. The caveat here is that providing a hint for the filename can increase the quality of detection. Default return is a string of the Media type name.
      *
      */
-    public String putStream() {
-        // TODO: Implement...
-        
-        return null;
+    @PUT
+    @Path("stream")
+    @Consumes("*/*")
+    @Produces("text/plain")
+    public String putStream(final InputStream is,
+            @Context HttpHeaders httpHeaders, @Context final UriInfo info) {
+        Metadata met = new Metadata();
+        TikaInputStream tis = TikaInputStream.get(TikaResourceApiServiceImpl.getInputStream(is, met, httpHeaders));
+        String filename = TikaResourceApiServiceImpl.detectFilename(httpHeaders
+                .getRequestHeaders());
+        LOG.info("Detecting media type for Filename: {}", filename);
+        met.add(TikaCoreProperties.RESOURCE_NAME_KEY, filename);
+        long taskId = serverStatus.start(ServerStatus.TASK.DETECT, filename);
+        try {
+            return TikaResourceApiServiceImpl.getConfig().getDetector().detect(tis, met).toString();
+        } catch (IOException e) {
+            LOG.warn("Unable to detect MIME type for file. Reason: {} ({})",
+                    e.getMessage(), filename, e);
+            return MediaType.OCTET_STREAM.toString();
+        } catch (OutOfMemoryError e) {
+            LOG.error("OOM while detecting: ({})", filename, e);
+            serverStatus.setStatus(ServerStatus.STATUS.ERROR);
+            throw e;
+        } finally {
+            serverStatus.complete(taskId);
+        }
     }
     
 }

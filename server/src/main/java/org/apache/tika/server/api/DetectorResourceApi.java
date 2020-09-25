@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.ext.multipart.*;
 
@@ -41,6 +44,7 @@ public interface DetectorResourceApi  {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "If successful, this operation returns HTTP status code 200, with the body being a string for the detected mime type.", response = String.class),
         @ApiResponse(code = 500, message = "An error occurred processing the call.") })
-    public String putStream();
+    public String putStream(final InputStream is,
+            @Context HttpHeaders httpHeaders, @Context final UriInfo info);
 }
 

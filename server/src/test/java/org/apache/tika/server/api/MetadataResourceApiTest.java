@@ -77,6 +77,18 @@ public class MetadataResourceApiTest extends CXFTestBase {
     private MetadataResourceApi api;
     private static final String META_PATH = "/meta";
 
+    @Before
+    public void setup() {
+        JacksonJsonProvider provider = new JacksonJsonProvider();
+        List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
+        providers.add(provider);
+        
+        api = JAXRSClientFactory.create("http://localhost:9998", MetadataResourceApi.class, providers);
+        org.apache.cxf.jaxrs.client.Client client = WebClient.client(api);
+        
+        ClientConfiguration config = WebClient.getConfig(client); 
+    }
+    
     @Override
     protected void setUpResources(JAXRSServerFactoryBean sf) {
         sf.setResourceClasses(MetadataResourceApiServiceImpl.class);
@@ -255,18 +267,6 @@ public class MetadataResourceApiTest extends CXFTestBase {
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         String s = IOUtils.readStringFromStream((InputStream) response.getEntity());
         assertContains("<rdf:li>Maxim Valyanskiy</rdf:li>", s);
-    }
-    
-    @Before
-    public void setup() {
-        JacksonJsonProvider provider = new JacksonJsonProvider();
-        List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
-        providers.add(provider);
-        
-        api = JAXRSClientFactory.create("http://localhost:9998", MetadataResourceApi.class, providers);
-        org.apache.cxf.jaxrs.client.Client client = WebClient.client(api);
-        
-        ClientConfiguration config = WebClient.getConfig(client); 
     }
 
     

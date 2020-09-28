@@ -72,7 +72,7 @@ public class DetectorResourceApiTest extends CXFTestBase {
         List<JacksonJsonProvider> providers = new ArrayList<JacksonJsonProvider>();
         providers.add(provider);
         
-        api = JAXRSClientFactory.create("https://localhost:9998", DetectorResourceApi.class, providers);
+        api = JAXRSClientFactory.create("http://localhost:9998", DetectorResourceApi.class, providers);
         org.apache.cxf.jaxrs.client.Client client = WebClient.client(api);
         
         ClientConfiguration config = WebClient.getConfig(client); 

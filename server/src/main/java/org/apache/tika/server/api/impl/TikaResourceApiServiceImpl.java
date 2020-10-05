@@ -110,7 +110,6 @@ public class TikaResourceApiServiceImpl implements TikaResourceApi {
         ExtractorFactory.setAllThreadsPreferEventExtractors(true);
     }
 
-    @SuppressWarnings("serial")
     public static Parser createParser() {
         final Parser parser = new AutoDetectParser(tikaConfig);
 

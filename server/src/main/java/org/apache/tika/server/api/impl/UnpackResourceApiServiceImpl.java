@@ -253,7 +253,8 @@ public class UnpackResourceApiServiceImpl implements UnpackResourceApi {
                     TikaInputStream tin = (TikaInputStream) inputStream;
 
                     if (tin.getOpenContainer() != null && tin.getOpenContainer() instanceof DirectoryEntry) {
-                        POIFSFileSystem fs = new POIFSFileSystem();
+                        @SuppressWarnings("resource")
+						POIFSFileSystem fs = new POIFSFileSystem();
                         copy((DirectoryEntry) tin.getOpenContainer(), fs.getRoot());
                         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
                         fs.writeFilesystem(bos2);

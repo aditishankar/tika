@@ -210,6 +210,7 @@ public class RecursiveMetadataAndContentApiTest extends CXFTestBase {
         //default unspecified
         Response response = WebClient
                 .create(endPoint+META_PATH)
+                .type("application/msword")
                 .accept("application/json")
                 .put(ClassLoader
                         .getSystemResourceAsStream(TEST_RECURSIVE_DOC));
